@@ -1,0 +1,3 @@
+include AUTHORS COPYING LICENSE README.md test-requirements.txt
+graft src/ocupado_plugin_google_groups_free
+graft test

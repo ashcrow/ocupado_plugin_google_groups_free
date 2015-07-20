@@ -1,0 +1,11 @@
+language: python
+python:
+    - "2.7"
+install:
+  - "pip install -r test-requirements.txt"
+  - "pip install git+https://github.com/ashcrow/ocupado"
+script:
+    - "pep8 ."
+    - "python setup.py nosetests --with-coverage --cover-package ocupado_plugin_google_groups_free --cover-min-percentage=80"
+notifications:
+    email: false
