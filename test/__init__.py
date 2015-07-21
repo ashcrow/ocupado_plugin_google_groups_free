@@ -86,7 +86,8 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
         with nested(
                     mock.patch('mechanize.Browser.open'),
                     mock.patch('mechanize.Browser.retrieve'),
-                ) as (_open, _retrieve):
+                    mock.patch('os.unlink')
+                ) as (_open, _retrieve, _unlink):
             # Setting return data for the authenticate() state
             self.g._con._set_response(
                 mechanize._response.make_response(
@@ -103,11 +104,15 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
             self.assertTrue(info['exists'])
             self.assertEquals(info['details']['username'], 'human')
 
+            # Verify the temporary csv file would be gone
+            _unlink.assert_called_once_with('test/members.csv')
+
     def test_plugin_google_groups_free_exists_with_no_results(self):
         with nested(
                     mock.patch('mechanize.Browser.open'),
                     mock.patch('mechanize.Browser.retrieve'),
-                ) as (_open, _retrieve):
+                    mock.patch('os.unlink')
+                ) as (_open, _retrieve, _unlink):
             # Setting return data for the authenticate() state
             self.g._con._set_response(
                 mechanize._response.make_response(
@@ -124,11 +129,15 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
             self.assertFalse(info['exists'])
             self.assertEquals(info['details']['username'], 'doesnotexist')
 
+            # Verify the temporary csv file would be gone
+            _unlink.assert_called_once_with('test/nomembers.csv')
+
     def test_plugin_google_groups_free_get_all_usernames(self):
         with nested(
                     mock.patch('mechanize.Browser.open'),
                     mock.patch('mechanize.Browser.retrieve'),
-                ) as (_open, _retrieve):
+                    mock.patch('os.unlink')
+                ) as (_open, _retrieve, _unlink):
             # Setting return data for the authenticate() state
             self.g._con._set_response(
                 mechanize._response.make_response(
@@ -145,3 +154,6 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
             self.assertIn('human', users)
             self.assertIn('robot', users)
             self.assertNotIn('notthere', users)
+
+            # Verify the temporary csv file would be gone
+            _unlink.assert_called_once_with('test/members.csv')

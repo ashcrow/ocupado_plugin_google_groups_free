@@ -18,6 +18,7 @@ Google Groups plugin for the ocupado tool.
 
 import csv
 import json
+import os
 
 import mechanize
 import cookielib
@@ -118,6 +119,8 @@ class GoogleGroupsFree:
                 data.write(line + "\n")
             data.seek(0)
             results = csv.DictReader(data)
+        # Clean up temp file
+        os.unlink(filename)
 
         for member in results:
             result.append(member['Email address'].split('@')[0])
