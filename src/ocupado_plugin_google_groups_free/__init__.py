@@ -83,6 +83,7 @@ class GoogleGroupsFree:
         self._con.form['Email'] = self._user
         self._con.form['Passwd'] = self._password
         self._con.submit()
+        self._cookies
         # TODO: check results
 
     def logout(self):
@@ -90,10 +91,26 @@ class GoogleGroupsFree:
         Defines how to logout via a Google Groups Free.
         """
         self._con.open(self._logout_endpoint)
-        # We should be back to the log in page
+        # Check for removal of expected cookies post logout
+        # FWIW: This is an unfortunate side effect of scraping and trying to be
+        # thorough
+        auth_cookies = []
+        if '.google.com' in self._cookies._cookies.keys():
+            for removed in ['APISID', 'SSID', 'SAPISID', 'SID', 'HSID']:
+                if removed in self._cookies._cookies['.google.com']['/'].keys():
+                    auth_cookies.append('.google.com:' + removed)
+
+        if 'accounts.google.com' in self._cookies._cookies.keys():
+            if 'LSID' in self._cookies._cookies['accounts.google.com']['/']:
+                auth_cookies.append('accounts.google.com:LSID')
+
+        if auth_cookies:
+            raise Exception('Log out failed: Cookies still exist: %s' % (
+                auth_cookies))
+        # We should be back to the log in pagea
         if self._con.title() != 'Google Accounts':
             # TODO: Make real exceptions
-            raise Exception('Log out failed.')
+            raise Exception('Log out failed. Expected end flow did not occur.')
         # Clear all cookies for good measure
         self._cookies.clear()
 
