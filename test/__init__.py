@@ -16,6 +16,7 @@
 Tests for the Google Groups Free plugin.
 """
 
+import cookielib
 import unittest
 
 import mechanize
@@ -43,6 +44,20 @@ LOGIN_HTML = '''
 '''
 
 
+def set_auth_cookies(cookiejar):
+    """
+    Sets auth cookies up in the given cookiejar.
+    """
+    cookiejar.set_cookie(cookielib.Cookie(
+            1, 'LSID', '', None, False, 'accounts.google.com', True, False,
+            '/', True, True, None, None, '', '', False))
+
+    for google_com_cookie in ['APISID', 'SSID', 'SAPISID', 'SID', 'HSID']:
+        cookiejar.set_cookie(cookielib.Cookie(
+            1, google_com_cookie, '', None, False, '.google.com', True, True,
+            '/', True, True, None, None, '', '', False))
+
+
 class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
     """
     Tests the GoogleGroupsFree plugin.
@@ -66,6 +81,8 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
                 mechanize._response.make_response(
                     LOGIN_HTML, RESPONSE_HEADERS,
                     LOGIN_URL, 200, '200 OK'), False)
+            # Inject the fake auth cookies for testing
+            set_auth_cookies(self.g._cookies)
             # authenticate() shouldn't return anything
             self.assertEquals(self.g.authenticate(), None)
             # There should have been two calls
@@ -78,6 +95,11 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
                     mock.patch('mechanize.Browser.open'),
                     mock.patch('mechanize.Browser.title')
                 ) as (_open, _title):
+
+            # We do not inject the fake auth cookies here since open()
+            # would be in charge of removing them. That means our test
+            # would manually add then manually remove the cookies.
+
             _title.return_value = 'Google Accounts'
             # logout() should return nothing
             self.assertEquals(self.g.logout(), None)
@@ -94,6 +116,8 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
                 mechanize._response.make_response(
                     LOGIN_HTML, RESPONSE_HEADERS,
                     LOGIN_URL, 200, '200 OK'), False)
+            # Inject the fake auth cookies for testing
+            set_auth_cookies(self.g._cookies)
 
             self.g.authenticate()
 
@@ -120,6 +144,9 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
                     LOGIN_HTML, RESPONSE_HEADERS,
                     LOGIN_URL, 200, '200 OK'), False)
 
+            # Inject the fake auth cookies for testing
+            set_auth_cookies(self.g._cookies)
+
             self.g.authenticate()
 
             # Point the retrieve call to test/members.csv
@@ -144,6 +171,9 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
                 mechanize._response.make_response(
                     LOGIN_HTML, RESPONSE_HEADERS,
                     LOGIN_URL, 200, '200 OK'), False)
+
+            # Inject the fake auth cookies for testing
+            set_auth_cookies(self.g._cookies)
 
             self.g.authenticate()
 

@@ -84,7 +84,25 @@ class GoogleGroupsFree:
         self._con.form['Passwd'] = self._password
         self._con.submit()
         self._cookies
-        # TODO: check results
+        # Check cookies to make sure we are logged in
+        # FWIW: This is an unfortunate side effect of scraping and trying to be
+        # thorough
+        google_com_cookies = ['APISID', 'SSID', 'SAPISID', 'SID', 'HSID']
+        try:
+            cookies = self._cookies._cookies
+            for expected in ['APISID', 'SSID', 'SAPISID', 'SID', 'HSID']:
+                if expected not in cookies['.google.com']['/'].keys():
+                    # TODO: Use a real exception
+                    raise Exception
+            if 'LSID' not in cookies['accounts.google.com']['/']:
+                # TODO: Use a real exception
+                raise Exception
+        except:
+            # TODO: Use a real exception
+            raise Exception(
+                'Log in failed: Expected cookies missing. '
+                'Required: .google.com:%s, accounts.google.com:LSID' % (
+                    google_com_cookies))
 
     def logout(self):
         """
@@ -95,14 +113,15 @@ class GoogleGroupsFree:
         # FWIW: This is an unfortunate side effect of scraping and trying to be
         # thorough
         auth_cookies = []
+        cookies = self._cookies._cookies
         if '.google.com' in self._cookies._cookies.keys():
             for removed in ['APISID', 'SSID', 'SAPISID', 'SID', 'HSID']:
-                if removed in self._cookies._cookies['.google.com']['/'].keys():
-                    auth_cookies.append('.google.com:' + removed)
+                if removed in cookies['.google.com']['/'].keys():
+                    auth_cookies.append('.google.com:/:' + removed)
 
         if 'accounts.google.com' in self._cookies._cookies.keys():
-            if 'LSID' in self._cookies._cookies['accounts.google.com']['/']:
-                auth_cookies.append('accounts.google.com:LSID')
+            if 'LSID' in cookies['accounts.google.com']['/']:
+                auth_cookies.append('accounts.google.com:/:LSID')
 
         if auth_cookies:
             raise Exception('Log out failed: Cookies still exist: %s' % (
