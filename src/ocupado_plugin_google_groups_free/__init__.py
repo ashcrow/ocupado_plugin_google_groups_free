@@ -47,9 +47,7 @@ class GoogleGroupsFree:
         '&hl=en&service=groups2&passive=true'
     )
     #: URL for logout
-    _logout_endpoint = (
-        'https://accounts.google.com/SignOutOptions'
-        '?continue=https%3A%2F%2Fgroups.google.com%2Fd%2Foverview')
+    _logout_endpoint = 'https://accounts.google.com/Logout?hl=en'
 
     #: URL template for user export. Requires "% self._group"
     _export_endpoint_tpl = 'https://groups.google.com/forum/exportmembers/%s'

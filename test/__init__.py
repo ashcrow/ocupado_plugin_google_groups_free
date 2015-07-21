@@ -36,10 +36,7 @@ LOGIN_URL = (
     '&hl=en&service=groups2&passive=true'
 )
 
-LOGOUT_URL = (
-    'https://accounts.google.com/SignOutOptions'
-    '?continue=https%3A%2F%2Fgroups.google.com%2Fd%2Foverview'
-)
+LOGOUT_URL = 'https://accounts.google.com/Logout?hl=en'
 
 LOGIN_HTML = '''
 <html><form><input name="Email" /><input name="Passwd"/></form></html>
