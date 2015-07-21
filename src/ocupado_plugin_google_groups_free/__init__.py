@@ -19,6 +19,7 @@ Google Groups plugin for the ocupado tool.
 import csv
 import json
 import os
+import warnings
 
 import mechanize
 import cookielib
@@ -31,6 +32,8 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+# turn off warnings
+warnings.simplefilter('ignore')
 
 __version__ = '0.0.1'
 
@@ -63,7 +66,6 @@ class GoogleGroupsFree:
         self._password = password
         self._group = group
         self._export_endpoint = self._export_endpoint_tpl % self._group
-
         self._cookies = cookielib.LWPCookieJar()
         self._con = mechanize.Browser()
         self._con.set_cookiejar(self._cookies)
