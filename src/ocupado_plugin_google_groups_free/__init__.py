@@ -90,7 +90,12 @@ class GoogleGroupsFree:
         Defines how to logout via a Google Groups Free.
         """
         self._con.open(self._logout_endpoint)
-        # TODO: check results
+        # We should be back to the log in page
+        if self._con.title() != 'Google Accounts':
+            # TODO: Make real exceptions
+            raise Exception('Log out failed.')
+        # Clear all cookies for good measure
+        self._cookies.clear()
 
     def exists(self, userid):
         """

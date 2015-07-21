@@ -74,7 +74,11 @@ class TestOcupadoPluginGoogleGroupsFree(unittest.TestCase):
             self.assertEquals(_open.call_args_list[0][0][0], LOGIN_URL)
 
     def test_plugin_google_groups_free_logout(self):
-        with mock.patch('mechanize.Browser.open') as _open:
+        with nested(
+                    mock.patch('mechanize.Browser.open'),
+                    mock.patch('mechanize.Browser.title')
+                ) as (_open, _title):
+            _title.return_value = 'Google Accounts'
             # logout() should return nothing
             self.assertEquals(self.g.logout(), None)
             _open.assert_called_once_with(LOGOUT_URL)
